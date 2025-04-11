@@ -21,15 +21,17 @@ jobs:
           echo env.github_repository: ${{ env.GITHUB_REPOSITORY }} 
 
       - name: Compare package json version
-        id: compare
-        uses: sharesight/compare-package-json-version-with-latest@v2.0.0 
+        uses: dkershner6/npm-version-check-with-comment-action@v1
+        id: version-check
         with:
-          repository: ${{ github.repository }}
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          
+      - run: echo ${{ steps.version-check.outputs.version-did-change }}
 
       - name: Fail if package json version is not updated
-        if: steps.compare.outputs.matches == 'true'
+        if: ${{ steps.version-check.outputs.version-did-change == 'false' }}
         run: |
-          echo The package.json version was not updated. In this branch: ${{ steps.compare.outputs.current_version }} vs what is in main: ${{ steps.compare.outputs.latest_version }} 
+          echo The package.json version was not updated. Please update package.json version.
           exit 1
 
       - uses: peter-evans/create-or-update-comment@v3
