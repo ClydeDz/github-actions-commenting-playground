@@ -22,7 +22,7 @@ jobs:
           body: |
             👋 Hello from **GitHub Actions** marketplace!
 
-            Here's a variable `${{ github.ref_name }}` and `${{ github.event.head_commit.message }}`
+            Here's a variable `${{ github.ref_name }}` and `${{ github.event.pull_request.number }}`
             
             Here’s a table:
       
@@ -43,7 +43,7 @@ jobs:
           MESSAGE="🚀 Deployment triggered on branch: \`${{github.ref_name}}\`"
           COMMIT_MSG="${{ github.event.head_commit.message }}"
           
-          gh pr comment "$PR_NUMBER" --body $'👋 Hello from **GitHub Actions** gh cli!\nHere are variables `${MESSAGE}` `${COMMIT_MSG}` \nHere’s a table:\n\n| Feature       | Supported |\n| ------------- | --------- |\n| Multiline     | ✅        |\n| Bold          | ✅        |\n| Links         | ✅        |\n\n```js\nconsole.log("Hello from gh!");\n```\n\n[Docs](https://github.com)'
+          gh pr comment "$PR_NUMBER" --body $'👋 Hello from **GitHub Actions** gh cli!\nHere are variables $MESSAGE $COMMIT_MSG \nHere’s a table:\n\n| Feature       | Supported |\n| ------------- | --------- |\n| Multiline     | ✅        |\n| Bold          | ✅        |\n| Links         | ✅        |\n\n```js\nconsole.log("Hello from gh!");\n```\n\n[Docs](https://github.com)'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -51,12 +51,13 @@ jobs:
       - name: Comment on pull request
         run: |
           BRANCH="${{ github.ref_name }}"
-          COMMIT_MSG="${{ github.event.head_commit.message }}"
+          COMMIT_MSG="${{ github.event.pull_request.number }}"
           
           COMMENT_BODY=$(cat <<EOF
           👋 Hello from **GitHub Actions**!
 
           Branch: \`$BRANCH\`
+          PR: \`$COMMIT_MSG\`
           Here’s a table:
           
           | Feature       | Supported |
