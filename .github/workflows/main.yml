@@ -18,7 +18,6 @@ jobs:
       - uses: EndBug/version-check@v2
         id: version-updated
         with:
-          diff-search: true
           token: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Debug
