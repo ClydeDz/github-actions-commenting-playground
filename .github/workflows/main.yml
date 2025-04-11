@@ -20,19 +20,63 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            👋 Hello! This is a comment from GitHub Actions via marketplace.
+            👋 Hello from **GitHub Actions** marketplace!
+
+            Here's a variable `${{ github.ref_name }}` and `${{ github.event.pull_request.number }}`
             
+            Here’s a table:
+      
+            | Feature       | Supported |
+            | ------------- | --------- |
+            | Multiline     | ✅        |
+            | Bold          | ✅        |
+            | Links         | ✅        |
+      
+            ```js
+            console.log("This is a code block!");
+            ```
+            
+            [Docs](https://github.com/your-org/your-repo)
+
       - name: Add comment to PR
         run: |
-          gh pr comment "$PR_NUMBER" --body "Hello from GitHub Actions via gh cli! 👋"
+          MESSAGE="🚀 Deployment triggered on branch: \`${{github.ref_name}}\`"
+          COMMIT_MSG="${{ github.event.pull_request.number }}"
+          BODY=$'🚀 Deployment triggered on branch: `'"$MESSAGE"$'`\n\nCommit message: `'"$COMMIT_MSG"$'\n'
+          
+          gh pr comment "$PR_NUMBER" --body "$BODY"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           
       - name: Comment on pull request
         run: |
+          BRANCH="${{ github.ref_name }}"
+          COMMIT_MSG="${{ github.event.pull_request.number }}"
+          
+          COMMENT_BODY=$(cat <<EOF
+          👋 Hello from **GitHub Actions**!
+
+          Branch: \`$BRANCH\`
+          PR: \`$COMMIT_MSG\`
+          Here’s a table:
+          
+          | Feature       | Supported |
+          | ------------- | --------- |
+          | Multiline     | ✅        |
+          | Bold          | ✅        |
+          | Links         | ✅        |
+          
+          \`\`\`js
+          console.log("This is a code block!");
+          \`\`\`
+          
+          [Docs](https://github.com)
+          EOF
+          )
+          
           curl -s -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Content-Type: application/json" \
-            -d '{"body":"Hello from GitHub Actions via curl! 👋"}' \
+            -d "$(jq -nc --arg body "$COMMENT_BODY" '{body: $body}')" \
             "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments"
             
