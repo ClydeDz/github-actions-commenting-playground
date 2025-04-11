@@ -41,7 +41,7 @@ jobs:
       - name: Add comment to PR
         run: |
           MESSAGE="🚀 Deployment triggered on branch: \`${{github.ref_name}}\`"
-          COMMIT_MSG="${{ github.event.head_commit.message }}"
+          COMMIT_MSG="${{ github.event.pull_request.number }}"
           BODY=$'🚀 Deployment triggered on branch: `'"$MESSAGE"$'`\n\nCommit message: `'"$COMMIT_MSG"$'\n'
           
           gh pr comment "$PR_NUMBER" --body "$BODY"
