@@ -15,24 +15,34 @@ jobs:
       - name: Checkout the repo
         uses: actions/checkout@v3
 
+      - uses: EndBug/version-check@v2
+        id: version-updated
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Debug
+        run: |
+          echo has updated : ${{ steps.version-updated.outputs.changed  }}
+          echo boolean : ${{ steps.version-updated.outputs.changed == 'false' }}
+          
+      - uses: peter-evans/create-or-update-comment@v3
+        if: ${{ steps.version-updated.outputs.changed == 'false' }}
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ⚠️ The package.json version wasn't updated. Please update and try again.
+          
+      - name: Fail if package json version is not updated
+        if: ${{ steps.version-updated.outputs.changed == 'false' }}
+        run: |
+          echo The package.json version was not updated. Please update package.json version.
+          exit 1
+
       - uses: peter-evans/create-or-update-comment@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.pull_request.number }}
           body: |
             👋 Hello! This is a comment from GitHub Actions via marketplace.
-            
-      - name: Add comment to PR
-        run: |
-          gh pr comment "$PR_NUMBER" --body "Hello from GitHub Actions via gh cli! 👋"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          
-      - name: Comment on pull request
-        run: |
-          curl -s -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d '{"body":"Hello from GitHub Actions via curl! 👋"}' \
-            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments"
             
