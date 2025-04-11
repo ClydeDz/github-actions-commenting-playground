@@ -14,6 +14,25 @@ jobs:
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v3
+        
+      - name: Debug
+        run: |
+          echo github.repository: ${{ github.repository }}
+          echo env.github_repository: ${{ env.GITHUB_REPOSITORY }} 
+
+      - name: Compare package json version
+        uses: dkershner6/npm-version-check-with-comment-action@v1
+        id: version-check
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          
+      - run: echo ${{ steps.version-check.outputs.version-did-change }}
+
+      - name: Fail if package json version is not updated
+        if: ${{ steps.version-check.outputs.version-did-change == 'false' }}
+        run: |
+          echo The package.json version was not updated. Please update package.json version.
+          exit 1
 
       - uses: peter-evans/create-or-update-comment@v3
         with:
