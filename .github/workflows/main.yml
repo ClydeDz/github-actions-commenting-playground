@@ -14,10 +14,17 @@ jobs:
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v3
+        
+      - name: Debug
+        run: |
+          echo github.repository: ${{ github.repository }}
+          echo env.github_repository: ${{ env.GITHUB_REPOSITORY }} 
 
       - name: Compare package json version
         id: compare
         uses: sharesight/compare-package-json-version-with-latest@v2.0.0 
+        with:
+          repository: ${{ github.repository }}
 
       - name: Fail if package json version is not updated
         if: steps.compare.outputs.matches == 'true'
