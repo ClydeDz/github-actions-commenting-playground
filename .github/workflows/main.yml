@@ -22,6 +22,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
+      - name: Debug
+        run: |
+          echo has updated : ${{ steps.version-updated.outputs.has-updated  }}
+          echo boolean : ${{ steps.version-updated.outputs.has-updated == 'false' }}
+          
       - name: Fail if package json version is not updated
         if: ${{ steps.version-updated.outputs.has-updated == 'false' }}
         run: |
