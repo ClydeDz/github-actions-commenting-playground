@@ -26,6 +26,14 @@ jobs:
           echo has updated : ${{ steps.version-updated.outputs.changed  }}
           echo boolean : ${{ steps.version-updated.outputs.changed == 'false' }}
           
+      - uses: peter-evans/create-or-update-comment@v3
+        if: ${{ steps.version-updated.outputs.changed == 'false' }}
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ⚠️ The package.json version wasn't updated. Please update and try again.
+          
       - name: Fail if package json version is not updated
         if: ${{ steps.version-updated.outputs.changed == 'false' }}
         run: |
