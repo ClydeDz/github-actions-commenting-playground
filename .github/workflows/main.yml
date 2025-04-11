@@ -42,8 +42,9 @@ jobs:
         run: |
           MESSAGE="🚀 Deployment triggered on branch: \`${{github.ref_name}}\`"
           COMMIT_MSG="${{ github.event.head_commit.message }}"
+          BODY=$'🚀 Deployment triggered on branch: `'"$MESSAGE"$'`\n\nCommit message:\n```\n'"$COMMIT_MSG"$'\n```'
           
-          gh pr comment "$PR_NUMBER" --body $'👋 Hello from **GitHub Actions** gh cli!\nHere are variables $MESSAGE $COMMIT_MSG \nHere’s a table:\n\n| Feature       | Supported |\n| ------------- | --------- |\n| Multiline     | ✅        |\n| Bold          | ✅        |\n| Links         | ✅        |\n\n```js\nconsole.log("Hello from gh!");\n```\n\n[Docs](https://github.com)'
+          gh pr comment "$PR_NUMBER" --body "$BODY"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
