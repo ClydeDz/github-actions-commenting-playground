@@ -15,6 +15,16 @@ jobs:
       - name: Checkout the repo
         uses: actions/checkout@v3
 
+      - name: Compare package json version
+        id: compare
+        uses: sharesight/compare-package-json-version-with-latest@v2.0.0 
+
+      - name: Fail if package json version is not updated
+        if: steps.compare.outputs.matches == 'true'
+        run: |
+          echo The package.json version was not updated. In this branch: ${{ steps.compare.outputs.current_version }} vs what is in main: ${{ steps.compare.outputs.latest_version }} 
+          exit 1
+
       - uses: peter-evans/create-or-update-comment@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
