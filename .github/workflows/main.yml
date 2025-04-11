@@ -17,8 +17,6 @@ jobs:
 
       - uses: MontyD/package-json-updated-action@1.0.1
         id: version-updated
-        with:
-          path: package.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
