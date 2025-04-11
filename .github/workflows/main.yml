@@ -15,18 +15,19 @@ jobs:
       - name: Checkout the repo
         uses: actions/checkout@v3
 
-      - uses: MontyD/package-json-updated-action@1.0.1
+      - uses: EndBug/version-check@v2
         id: version-updated
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          diff-search: true
+          token: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Debug
         run: |
-          echo has updated : ${{ steps.version-updated.outputs.has-updated  }}
-          echo boolean : ${{ steps.version-updated.outputs.has-updated == 'false' }}
+          echo has updated : ${{ steps.version-updated.outputs.changed  }}
+          echo boolean : ${{ steps.version-updated.outputs.changed == 'false' }}
           
       - name: Fail if package json version is not updated
-        if: ${{ steps.version-updated.outputs.has-updated == 'false' }}
+        if: ${{ steps.version-updated.outputs.changed == 'false' }}
         run: |
           echo The package.json version was not updated. Please update package.json version.
           exit 1
